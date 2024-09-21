@@ -4,7 +4,7 @@
 
   2. For traffic generator, run the file 'traffic_generator.py' in a separate bash terminal first
   ```bash
-  $ python3 src/traffic_generator.py
+  python3 src/traffic_generator.py
   ```
 and input equipment IDs that you would like, this generates UDP traffic & simulates game units.
 
