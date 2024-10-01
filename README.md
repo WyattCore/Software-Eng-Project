@@ -9,8 +9,6 @@ and input equipment IDs that you would like, this generates UDP traffic & simula
 
   2. Install required libraries and run the program.
   ```bash     
-  python3 -m pip install python-dotenv
-  python3 -m pip install supabase
   python3 -m pip install tkinter
   python3 -m pip install typing
   python3 -m pip install Pillow
