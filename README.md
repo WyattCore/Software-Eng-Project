@@ -33,3 +33,12 @@ then after password is entered:
   ```
   select * from players;
   ```
+ _______________________________________
+| GitHub Username  | Real Name          |
+|------------------|--------------------|
+| axyliang         | Axyl Liang         |
+| KrispyKremeMan   | Wyatt Core         |
+| LisbethEch       | Lisbeth Echeverria |
+| touzongvang      | Touzong Vang       |
+| yonatanruark     | Yonatan Rubio Lugo |
+ _______________________________________
