@@ -45,7 +45,7 @@ def main() -> None:
     wait_for_start(UDPServerSocketReceive)
 
     while True:
-        # Randomly select a green and red player
+        # Randomly select a blue and red player
         blueplayer: str = blue1 if random.randint(1, 2) == 1 else blue2
         redplayer: str = red1 if random.randint(1, 2) == 1 else red2
         message: str = f"{blueplayer}:{redplayer}" if random.randint(1,2) == 1 else f"{redplayer}:{blueplayer}"
