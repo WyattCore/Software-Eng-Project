@@ -14,11 +14,7 @@ db.connect()  # Establish the connection
 # Ensure the players table exists
 db.create_table()
 
-database_response = None
-
 def on_tab(event: tk.Event, root: tk.Tk, entry_ids: Dict, users: Dict, builder: pygubu.Builder) -> None:
-    global database_response
-
     entry_field_id: str = entry_ids.get(event.widget.winfo_id())
     if entry_field_id is None:
         return
@@ -54,6 +50,7 @@ def on_tab(event: tk.Event, root: tk.Tk, entry_ids: Dict, users: Dict, builder: 
             return
 
         user_id: int = int(event.widget.get())
+        matching_players = []  # Initialize matching_players here
         database_response = db.fetch_all_players()  # Fetch all players
         matching_players = [p for p in database_response if p[0] == user_id]  # Find matching user ID
 
@@ -81,8 +78,7 @@ def on_tab(event: tk.Event, root: tk.Tk, entry_ids: Dict, users: Dict, builder: 
                 root.after_idle(lambda: next_entry_field.focus_set())
 
     # If the user tabs from the codename entry field, insert the user into the database if they don't already exist
-    elif "codename" in entry_field_id and not matching_players:
-
+    elif "codename" in entry_field_id:
         equipment_id: int = int(builder.get_object(entry_field_id.replace("codename", "equipment_id"), root).get())
         user_id_widget: tk.Entry = builder.get_object(entry_field_id.replace("codename", "user_id"), root)
         user_id: int = int(user_id_widget.get())
@@ -146,7 +142,6 @@ def on_f5(main_frame: tk.Tk, root: tk.Tk, users: Dict, network: Networking) -> N
     # Remove frame from screen without destroying it
     main_frame.destroy()
 
-
 def build(root: tk.Tk, users: Dict, network: Networking) -> None:
     # Load the UI file and create the builder
     builder: pygubu.Builder = pygubu.Builder()
@@ -163,14 +158,14 @@ def build(root: tk.Tk, users: Dict, network: Networking) -> None:
 
     # Create a dictionary of process IDs and their corresponding entry field IDs
     entry_ids: Dict[int, str] = {}
-    fields: List[str] = {
+    fields: List[str] = [
         "red_equipment_id_",
         "red_user_id_",
         "red_codename_",
         "blue_equipment_id_",
         "blue_user_id_",
         "blue_codename_"
-    }
+    ]
 
     # Add each entry field ID to the dictionary of entry field IDs
     for i in range(1, 16):
