@@ -9,9 +9,11 @@ and input equipment IDs that you would like, this generates UDP traffic & simula
 
   2. Install required libraries and run the program.
   ```bash     
-  python3 -m pip install tkinter
+  sudo apt-get install python3-tk
   python3 -m pip install typing
   python3 -m pip install Pillow
+  pip install psycopg2-binary
+  pip install pygubu
   python3 src/main.py
   ```
 
