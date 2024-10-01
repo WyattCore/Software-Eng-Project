@@ -1,22 +1,35 @@
 # Software-Eng-Project
-  1. Create a Supabase account on [https://supabase.com/], create a new project and make a table named users, with id and username columns. Find the Project URL and API key and copy and paste into the dotenv file, then rename the file to '.env'.
 
+  1. Download project code as .zip file, extract the files, navigate to the extracted folder and copy the /path/to/Software-Eng-Project/,
+then open terminal and change the directory to run the code:
+     ```
+     cd /path/to/Software-Eng-Project/
+     ```
 
   2. For traffic generator, run the file 'traffic_generator.py' in a separate bash terminal first
-  ```bash
+  ```
   python3 src/traffic_generator.py
   ```
 and input equipment IDs that you would like, this generates UDP traffic & simulates game units.
 
 
   3. Install required libraries and run the program.
-  ```bash     
-  python3 -m pip install python-dotenv
-  python3 -m pip install supabase
-  python3 -m pip install tkinter
+  ```    
+  sudo apt-get install python3-tk
   python3 -m pip install typing
   python3 -m pip install Pillow
+  pip install psycopg2-binary
+  pip install pygubu
   python3 src/main.py
   ```
 
   4. Player input will use the tab key to register entry spaces, when the first team's players are finished use your mouse to click the entry space for the other team's first equipment ID and proceed with the same process. When all players are entered, click the continue button with mouse or press f5 key. Enter your equipment IDs the same as ones you entered in the traffic generator.
+
+  5. To view the database, input in terminal
+  ```
+  psql -h localhost -U student -d photon
+  ```
+then after password is entered:
+  ```
+  select * from players;
+  ```
