@@ -1,10 +1,11 @@
 from typing import Dict, List
-from dotenv import load_dotenv
 import os
 import tkinter as tk
-import supabase
+import psycopg2
+from psycopg2 import sql
 
 from networking import Networking
+from database import Database  # Import the Database class
 from user import User
 import splash_screen
 import player_entry
@@ -12,19 +13,25 @@ import player_entry
 if os.name == "nt":
     import winsound
 
-# Create the Supabase client
-load_dotenv()
-supabase_client: supabase.Client = supabase.create_client(
-    os.getenv("SUPABASE_URL"),
-    os.getenv("SUPABASE_KEY")
-)
+
+# Define PostgreSQL connection parameters
+connection_params = {
+    'dbname': 'photon',
+    'user': 'student',
+    'password': 'student',
+    'host': 'localhost',
+    'port': '5432'
+}
+
+# Initialize the Database instance
+db = Database()
+db.connect()  # Establish the connection
 
 def build_root() -> tk.Tk:
     # Build main window, set title, make fullscreen
     root: tk.Tk = tk.Tk()
     root.title("Photon")
     root.configure(background="white")
-
 
     # Force window to fill screen, place at top left
     width: int = root.winfo_screenwidth()
@@ -39,6 +46,7 @@ def destroy_root(root: tk.Tk, network: Networking) -> None:
     if os.name == "nt":
         winsound.PlaySound(None, winsound.SND_ASYNC)
     network.close_sockets()
+    db.close()  # Close the database connection
     root.destroy()
 
 def main() -> None:
