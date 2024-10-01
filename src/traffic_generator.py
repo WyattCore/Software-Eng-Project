@@ -26,15 +26,15 @@ def wait_for_start(sock: socket.socket) -> None:
 def main() -> None:
     # Print instructions, get plater IDs
     print("This program will generate some test traffic for 2 players\n"
-            "on the green team as well as 2 players on the red team.\n")
+            "on the blue team as well as 2 players on the red team.\n")
     
     print("Once the start code is received from the game software,\n"
             "the program will randomly select 2 players. The format\n"
             "of the message is player1:player2, meaning that player1\n"
             "has hit player2. If you wish to exit, type 'y' when prompted.\n")
 
-    green1: str = get_player_id("green", 1)
-    green2: str = get_player_id("green", 2)
+    blue1: str = get_player_id("blue", 1)
+    blue2: str = get_player_id("blue", 2)
     red1: str = get_player_id("red", 1)
     red2: str = get_player_id("red", 2)
 
@@ -46,9 +46,9 @@ def main() -> None:
 
     while True:
         # Randomly select a green and red player
-        greenplayer: str = green1 if random.randint(1, 2) == 1 else green2
+        blueplayer: str = blue1 if random.randint(1, 2) == 1 else blue2
         redplayer: str = red1 if random.randint(1, 2) == 1 else red2
-        message: str = f"{greenplayer}:{redplayer}" if random.randint(1,2) == 1 else f"{redplayer}:{greenplayer}"
+        message: str = f"{blueplayer}:{redplayer}" if random.randint(1,2) == 1 else f"{redplayer}:{blueplayer}"
         print(f"\n{message}")
 
         # If user wishes to continue, send message to game software
