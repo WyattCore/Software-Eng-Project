@@ -27,12 +27,8 @@ and input equipment IDs that you would like, this generates UDP traffic & simula
 
   5. To view the database, input in terminal
   ```
-  psql -h localhost -U student -d photon
-  ```
-then after password is entered:
-  ```
-  select * from players;
-  ```
+   psql photon
+```
  _______________________________________
 | GitHub Username  | Real Name          |
 |------------------|--------------------|
