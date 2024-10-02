@@ -23,9 +23,6 @@ connection_params = {
     'port': '5432'
 }
 
-# Initialize the Database instance
-db = Database()
-db.connect()  # Establish the connection
 
 def build_root() -> tk.Tk:
     # Build main window, set title, make fullscreen
