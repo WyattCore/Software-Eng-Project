@@ -1,17 +1,16 @@
 # Software-Eng-Project
 
-  1. Download project code as .zip file, extract the files, navigate to the extracted folder and copy the /path/to/Software-Eng-Project/,
+  1. Download project as .zip file, extract the files to desired destination, navigate to the extracted folder and copy the /path/to/Software-Eng-Project/,
 then open terminal and change the directory to run the code:
      ```
      cd /path/to/Software-Eng-Project/
      ```
 
-  2. For traffic generator, run the file 'traffic_generator.py' in a separate bash terminal first
+  2. Run the file 'traffic_generator.py' in a separate bash terminal first
   ```
   python3 src/traffic_generator.py
   ```
 and input equipment IDs that you would like, this generates UDP traffic & simulates game units.
-
 
   3. Install required libraries and run the program.
   ```    
