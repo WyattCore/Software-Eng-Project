@@ -51,6 +51,8 @@ class Database:
                 self.cursor.execute('''
                 ALTER TABLE players ADD CONSTRAINT unique_user_id UNIQUE (id);
                 ALTER TABLE players ADD CONSTRAINT unique_codename UNIQUE (codename);
+                INSERT INTO players (id, codename) VALUES (1, 'Opus');
+                INSERT INTO players (id, codename) VALUES (2, 'Axyl');
                 '''
                 )
                 self.conn.commit()  
