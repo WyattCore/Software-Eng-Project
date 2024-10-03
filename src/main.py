@@ -26,6 +26,7 @@ connection_params = {
 # Initialize the Database instance
 db = Database()
 db.connect()  # Establish the connection
+db.create_table()
 
 def build_root() -> tk.Tk:
     # Build main window, set title, make fullscreen
