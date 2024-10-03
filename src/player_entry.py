@@ -7,14 +7,7 @@ from networking import Networking
 from user import User
 from database import Database  # Import the Database class
 
-# Initialize the Database instance
-db = Database()
-db.connect()  # Establish the connection
-
-# Ensure the players table exists
-db.create_table()
-
-def on_tab(event: tk.Event, root: tk.Tk, entry_ids: Dict, users: Dict, builder: pygubu.Builder) -> None:
+def on_tab(event: tk.Event, root: tk.Tk, entry_ids: Dict, users: Dict, builder: pygubu.Builder, db: Database) -> None:
     entry_field_id: str = entry_ids.get(event.widget.winfo_id())
     if entry_field_id is None:
         return
@@ -142,7 +135,7 @@ def on_f5(main_frame: tk.Tk, root: tk.Tk, users: Dict, network: Networking) -> N
     # Remove frame from screen without destroying it
     main_frame.destroy()
 
-def build(root: tk.Tk, users: Dict, network: Networking) -> None:
+def build(root: tk.Tk, users: Dict, network: Networking, db: Database) -> None:
     # Load the UI file and create the builder
     builder: pygubu.Builder = pygubu.Builder()
     builder.add_from_file("assets/ui/player_entry.ui")
@@ -176,7 +169,7 @@ def build(root: tk.Tk, users: Dict, network: Networking) -> None:
     builder.get_object("blue_equipment_id_1", blue_frame).focus_set()
 
     # Bind keys to lambda functions
-    root.bind("<Tab>", lambda event: on_tab(event, root, entry_ids, users, builder))
+    root.bind("<Tab>", lambda event: on_tab(event, root, entry_ids, users, builder, db))
     root.bind("<KeyPress-F12>", lambda event: on_f12(main_frame, entry_ids, users, builder))
     root.bind("<KeyPress-F5>", lambda event: on_f5(main_frame, root, users, network))
 

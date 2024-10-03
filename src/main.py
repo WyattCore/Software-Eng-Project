@@ -23,6 +23,10 @@ connection_params = {
     'port': '5432'
 }
 
+# Initialize the Database instance
+db = Database()
+db.connect()  # Establish the connection
+db.create_table()
 
 def build_root() -> tk.Tk:
     # Build main window, set title, make fullscreen
@@ -69,9 +73,9 @@ def main() -> None:
     splash: splash_screen = splash_screen.build(root)
 
     # After 3 seconds, destroy the splash screen and build the player entry screen
-    # Play action screen will be built after F5 is pressed on player entry screen (see on_f5 function in src/player_entry.py)
+    # Pass the db object to player_entry.build
     root.after(3000, splash.destroy)
-    root.after(3000, player_entry.build, root, users, network)
+    root.after(3000, player_entry.build, root, users, network, db)
 
     # Run the main loop
     root.mainloop()

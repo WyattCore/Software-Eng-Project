@@ -23,17 +23,44 @@ class Database:
         except Exception as error:
             print(f"Error connecting to PostgreSQL database: {error}")
 
+    def table_exists(self, table_name):
+        """Check if the table already exists in the database."""
+        self.cursor.execute("""
+            SELECT EXISTS (
+                SELECT FROM pg_catalog.pg_tables
+                WHERE schemaname = 'public' AND tablename = %s
+            );
+        """, (table_name,))
+        return self.cursor.fetchone()[0]
+
     def create_table(self):
+        table_name = 'players'
         try:
-            self.cursor.execute('''
-                CREATE TABLE IF NOT EXISTS players (
-                    id INT PRIMARY KEY,
-                    codename VARCHAR(30) UNIQUE
-                );
-            ''')
-            self.conn.commit()
+            # Check if the table exists
+            if not self.table_exists(table_name):
+                # If it doesn't exist, create the table
+                self.cursor.execute('''
+                    CREATE TABLE players (
+                        id INT PRIMARY KEY,
+                        codename VARCHAR(30) UNIQUE
+                    );
+                ''')
+                self.conn.commit()
+                print(f"Table '{table_name}' created successfully.")
+
+                self.cursor.execute('''
+                ALTER TABLE players ADD CONSTRAINT unique_user_id UNIQUE (id);
+                ALTER TABLE players ADD CONSTRAINT unique_codename UNIQUE (codename);
+                INSERT INTO players (id, codename) VALUES (1, 'Opus');
+                INSERT INTO players (id, codename) VALUES (2, 'Axyl');
+                '''
+                )
+                self.conn.commit()  
+            else:
+                print(f"Table '{table_name}' already exists. No action taken.")
+
         except Exception as e:
-            print(f"Error creating table: {e}")
+            print(f"Error creating table or running additional SQL commands: {e}")
 
     def insert_player(self, player_id, codename):
         try:
