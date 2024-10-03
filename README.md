@@ -15,6 +15,7 @@ and input equipment IDs that you would like, this generates UDP traffic & simula
   3. Install required libraries and run the program.
   ```    
   sudo apt-get install python3-tk
+  sudo apt install python3-pip
   python3 -m pip install typing
   python3 -m pip install Pillow
   pip install psycopg2-binary
