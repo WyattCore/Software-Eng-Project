@@ -20,7 +20,14 @@ and input equipment IDs that you would like, this generates UDP traffic & simula
   python3 -m pip install Pillow
   pip install psycopg2-binary
   pip install pygubu
+  ```
+  ```
   python3 src/main.py
+  ```
+If it throws an unique constraint error while inserting players, run the following in sql:
+  ```
+  ALTER TABLE players ADD CONSTRAINT unique_user_id UNIQUE (id);
+  ALTER TABLE players ADD CONSTRAINT unique_codename UNIQUE (codename);
   ```
 
   4. Player input will use the tab key to register entry spaces, when the first team's players are finished use your mouse to click the entry space for the other team's first equipment ID and proceed with the same process. When all players are entered, click the continue button with mouse or press f5 key. Enter your equipment IDs the same as ones you entered in the traffic generator.
