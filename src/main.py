@@ -9,6 +9,7 @@ from database import Database  # Import the Database class
 from user import User
 import splash_screen
 import player_entry
+import player_action
 
 if os.name == "nt":
     import winsound
@@ -49,6 +50,10 @@ def destroy_root(root: tk.Tk, network: Networking) -> None:
     network.close_sockets()
     db.close()  # Close the database connection
     root.destroy()
+    
+def show_player_action_screen(root: tk.Tk, users: Dict[str, List[User]]) -> None:
+	 """Displays the player action screen after player entry is completed."""
+	 player_action.PlayerAction(root, users)
 
 def main() -> None:
     # Declare dictionary for storing user information
@@ -73,9 +78,9 @@ def main() -> None:
     splash: splash_screen = splash_screen.build(root)
 
     # After 3 seconds, destroy the splash screen and build the player entry screen
-    # Pass the db object to player_entry.build
+    # Play action screen will be built after F5 is pressed on player entry screen (see on_f5 function in src/player_entry.py)
     root.after(3000, splash.destroy)
-    root.after(3000, player_entry.build, root, users, network, db)
+    root.after(3000, player_entry.build, root, users, network)
 
     # Run the main loop
     root.mainloop()
