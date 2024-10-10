@@ -4,11 +4,32 @@
     <settings />
     <customwidgets />
   </project>
-  <object class="ttk.Frame" id="frame1">
-    <property name="height">200</property>
-    <property name="width">200</property>
+  <object class="ttk.Frame" id="action_frame" named="True">
+    <property name="cursor">based_arrow_down</property>
+    <property name="height">500</property>
+    <property name="relief">sunken</property>
+    <property name="takefocus">true</property>
+    <property name="width">1000</property>
     <layout manager="pack">
       <property name="side">top</property>
     </layout>
+    <child>
+      <object class="pygubu.forms.ttkwidget.Label" id="blue_label" named="True">
+        <property name="relief">flat</property>
+        <property name="text" translatable="yes">Blue Team
+</property>
+        <layout manager="pack">
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="pygubu.forms.ttkwidget.Label" id="red_label" named="True">
+        <property name="text" translatable="yes">label2</property>
+        <layout manager="pack">
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
   </object>
 </interface>
