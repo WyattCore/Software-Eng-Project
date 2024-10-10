@@ -15,8 +15,8 @@ BUFFER_SIZE: int = 1024
 GAME_TIME_SECONDS: int = 360 # Seconds
 BROADCAST_ADDRESS: str = "127.0.0.1"
 RECEIVE_ALL_ADDRESS: str = "0.0.0.0"
-TRANSMIT_PORT: int = 7501
-RECEIVE_PORT: int = 7500
+TRANSMIT_PORT: int = 7500
+RECEIVE_PORT: int = 7501
 
 class Networking:
     def __init__(self) -> None:
