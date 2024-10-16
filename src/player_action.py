@@ -6,6 +6,11 @@ import pygubu
 from networking import Networking
 
 
+def start_game():
+    print("working")
+
+
+
 def build_player_action_screen(root: tk.Tk, users: Dict, network: Networking) -> None:
     # Load the UI file and create the builder for player action screen
     builder: pygubu.Builder = pygubu.Builder()
@@ -24,3 +29,6 @@ def build_player_action_screen(root: tk.Tk, users: Dict, network: Networking) ->
     # Example: Bind action buttons or game controls to this screen
     play_button: tk.Button = builder.get_object("play_button", action_frame)
     play_button.configure(command=lambda: start_game(users, network))  # start_game can be your next action
+    
+    root.bind("<KeyPress-F5>", lambda event: start_game())
+
