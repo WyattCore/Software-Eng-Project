@@ -15,8 +15,10 @@
       <property name="anchor">ne</property>
       <property name="propagate">false</property>
     </containerlayout>
+
+    <!-- Blue Team Frame -->
     <child>
-      <object class="ttk.Frame" id="frame3">
+      <object class="ttk.Frame" id="frame_blue">
         <property name="height">500</property>
         <property name="width">500</property>
         <layout manager="place">
@@ -33,7 +35,7 @@
             <property name="text" translatable="yes">Blue Team</property>
             <layout manager="place">
               <property name="anchor">nw</property>
-              <property name="relx">0.5</property>
+              <property name="relx">0.4</property>
               <property name="x">0</property>
               <property name="y">0</property>
             </layout>
@@ -41,25 +43,27 @@
         </child>
       </object>
     </child>
+
+    <!-- Red Team Frame -->
     <child>
-      <object class="ttk.Frame" id="frame5">
+      <object class="ttk.Frame" id="frame_red">
         <property name="height">500</property>
         <property name="width">500</property>
-        <layout manager="grid">
-          <property name="column">0</property>
-          <property name="row">1</property>
+        <layout manager="place">
+          <property name="anchor">nw</property>
+          <property name="x">500</property>
+          <property name="y">0</property>
         </layout>
         <child>
           <object class="ttk.Label" id="red_label" named="True">
-            <property name="cursor">arrow</property>
-            <property name="font">{Palatino} 14 {bold}</property>
-            <property name="justify">right</property>
+            <property name="compound">top</property>
+            <property name="font">{Palatino Linotype} 14 {bold}</property>
+            <property name="justify">center</property>
             <property name="takefocus">true</property>
             <property name="text" translatable="yes">Red Team</property>
             <layout manager="place">
               <property name="anchor">nw</property>
-              <property name="relx">0.50</property>
-              <property name="rely">0.0</property>
+              <property name="relx">0.4</property>
               <property name="x">0</property>
               <property name="y">0</property>
             </layout>
@@ -67,6 +71,8 @@
         </child>
       </object>
     </child>
+
+    <!-- Start Game Button -->
     <child>
       <object class="ttk.Button" id="play_button" named="True">
         <property name="compound">top</property>
