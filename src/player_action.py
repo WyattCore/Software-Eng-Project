@@ -4,19 +4,14 @@ from typing import Dict, List
 import pygubu
 
 from networking import Networking
+from user import User
 
-
-def start_game():
-    print("working")
-
-
-def build_player_action_screen(root: tk.Tk, users: Dict[str, List], network: Networking) -> None:
+def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], network: Networking) -> None:
     # Load the UI file and create the builder for the player action screen
     builder: pygubu.Builder = pygubu.Builder()
     builder.add_from_file("assets/ui/player_action.ui")
 
     # Create the player action screen frame and place it in the root window
-    
     action_frame: tk.Frame = builder.get_object("action_frame", root)
     action_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
@@ -31,7 +26,6 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List], network: Net
     red_team_tree.heading("ID", text="ID")
     red_team_tree.heading("Codename", text="Codename")
     red_team_tree.place(relx=0.55, rely=0.1, anchor=tk.NW)
-
 
     # Set the background color of the tables
     blue_style = ttk.Style()
@@ -49,9 +43,31 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List], network: Net
     for user in users.get('red', []):
         red_team_tree.insert("", "end", values=(user.user_id, user.codename))
 
-    # Bind the start game button
+    # Bind the start game button to start countdown with correct arguments
     play_button: tk.Button = builder.get_object("play_button", action_frame)
-    play_button.configure(command=lambda: start_game(users, network))
+    play_button.configure(command=lambda: start_countdown(root, action_frame, users, network))
 
-    # Bind F5 to start the game
-    root.bind("<KeyPress-F5>", lambda event: start_game())
+    # Bind F5 to start the game with correct arguments
+    root.bind("<KeyPress-F5>", lambda event: start_game(users, network))
+
+
+def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 5) -> None:
+    """Start the countdown timer on the player action screen."""
+    countdown_label = tk.Label(action_frame, text=str(count), font=("Helvetica", 64))
+    countdown_label.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+
+    if count > 0:
+        # Update the countdown label each second
+        countdown_label.config(text=str(count))
+        root.after(1000, start_countdown, root, action_frame, users, network, count - 1)
+    else:
+        # Countdown is complete, start the game
+        countdown_label.config(text="GO!")
+        root.after(1000, countdown_label.destroy)
+        start_game(users, network)
+
+
+def start_game(users: Dict[str, List[User]], network: Networking) -> None:
+    """Logic to start the game after the countdown."""
+    print("Game has started!")
+    # Send signals via network or enable game controls here
