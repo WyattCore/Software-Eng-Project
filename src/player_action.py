@@ -75,7 +75,8 @@ def start_game(users: Dict[str, List[User]], network: Networking) -> None:
     print("Game has started!")
     # Send signals via network or enable game controls here
     # Returns a signal 202 after the counter ends. I tried here to some prints but i need to check with the sockets if the code is actually being sent.
-    if Networking.transmit_start_game_code:
+    #if Networking.transmit_start_game_code:
+    if network.transmit_start_game_code():
         print("Attempting 202")
     else:
         print("Unable to enter 202")
