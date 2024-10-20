@@ -57,8 +57,9 @@ class Networking:
     def transmit_start_game_code(self) -> bool:
         # Transmit start game code to the broadcast address
         try:
-            self.transmit_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            self.transmit_socket.sendto(str.encode(str(START_GAME_CODE)), (BROADCAST_ADDRESS, TRANSMIT_PORT))
+            self.transmit_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1) # sets up the upd socket
+            self.transmit_socket.sendto(str.encode(str(START_GAME_CODE)), (BROADCAST_ADDRESS, TRANSMIT_PORT)) #sends 202 code to devices
+            print("202 ... worked") #print statment to see if went through 
             return True
         except Exception as e:
             print(e)
