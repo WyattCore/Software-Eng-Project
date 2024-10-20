@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from typing import Dict, List
+from typing import Dict, List, Optional
 import pygubu
 
 from networking import Networking
@@ -48,23 +48,26 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     play_button.configure(command=lambda: start_countdown(root, action_frame, users, network))
 
     # Bind F5 to start the game with correct arguments
-    root.bind("<KeyPress-F5>", lambda event: start_game(users, network))
+    root.bind("<KeyPress-F5>", lambda event: start_game(users, network, countdown_label))
 
 
-def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 5) -> None:
+def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 5, countdown_label: Optional[tk.Label] = None) -> None:
     """Start the countdown timer on the player action screen."""
-    countdown_label = tk.Label(action_frame, text=str(count), font=("Helvetica", 64))
-    countdown_label.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+    if countdown_label is None:
+        # Create the countdown label once
+        countdown_label = tk.Label(action_frame, text=str(count), font=("Helvetica", 64))
+        countdown_label.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
 
     if count > 0:
         # Update the countdown label each second
         countdown_label.config(text=str(count))
-        root.after(1000, start_countdown, root, action_frame, users, network, count - 1)
+        root.after(1000, start_countdown, root, action_frame, users, network, count - 1, countdown_label)
     else:
         # Countdown is complete, start the game
         countdown_label.config(text="GO!")
-        root.after(1000, countdown_label.destroy)
+        root.after(1000, countdown_label.destroy)  # Destroy label after 1 second
         start_game(users, network)
+
 
 
 def start_game(users: Dict[str, List[User]], network: Networking) -> None:
