@@ -74,3 +74,5 @@ def start_game(users: Dict[str, List[User]], network: Networking) -> None:
     """Logic to start the game after the countdown."""
     print("Game has started!")
     # Send signals via network or enable game controls here
+    # Returns a signal 202 after the counter ends. I tried here to some prints but i need to check with the sockets if the code is actually being sent.
+    Networking.transmit_start_game_code
