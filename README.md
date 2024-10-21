@@ -36,7 +36,7 @@
   - Enter your equipment IDs the same as ones you entered in the traffic generator.
   - To clear all entries press the F12 key. 
   - When all players are entered via TAB key, click the continue button with mouse OR press F5 key. 
-  - When ready to start the game, use the mouse to click the 'Start Game' button.
+  - When ready to start the game, use the mouse to click the 'Start Game' button OR press F5 again.
 
   5. To view the database, input in terminal:
   ```
