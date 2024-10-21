@@ -5,8 +5,8 @@ from typing import Tuple
 
 # Declaring constants for socket communication info
 BUFFER_SIZE: int = 1024
-SERVER_ADDRESS_PORT: Tuple[str, int] = ("127.0.0.1", 7501)
-CLIENT_ADDRESS_PORT: Tuple[str, int] = ("127.0.0.1", 7500)
+SERVER_ADDRESS_PORT: Tuple[str, int] = ("127.0.0.1", 7500)
+CLIENT_ADDRESS_PORT: Tuple[str, int] = ("127.0.0.1", 7501)
 START_CODE: str = "202"
 END_CODE: str = "221"
 
@@ -18,10 +18,16 @@ def get_player_id(color: str, player_number: int) -> str:
 def wait_for_start(sock: socket.socket) -> None:
     print("\nWaiting for start from game software")
     received_data: str = ""
-    while received_data != START_CODE:
-        received_data, address = sock.recvfrom(BUFFER_SIZE)
-        received_data = received_data.decode("utf-8")
-        print(f"Received from game software: {received_data}")
+
+    while received_data != START_CODE:  # Wait for the start code
+        received_data, address = sock.recvfrom(BUFFER_SIZE)  # Receive data
+        received_data = received_data.decode("utf-8")  # Decode the received data
+        print(f"Received from game software: {received_data}")  # Print the received data
+
+    # This part will be executed after the while loop finishes (when start code is received)
+    if received_data == '202':  # Check if the received data is the start code
+        print("Game started!")
+
 
 def main() -> None:
     # Print instructions, get plater IDs
