@@ -43,12 +43,12 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     for user in users.get('red', []):
         red_team_tree.insert("", "end", values=(user.user_id, user.codename))
 
-    # Bind the start game button to start countdown with correct arguments
+    # Bind the start game button to start countdown or the game
     play_button: tk.Button = builder.get_object("play_button", action_frame)
     play_button.configure(command=lambda: start_countdown(root, action_frame, users, network))
-
-    # Bind F5 to start the game with correct arguments
-    root.bind("<KeyPress-F5>", lambda event: start_game(users, network, countdown_label))
+    
+    # Bind F5 to start the countdown with correct arguments
+    root.bind("<KeyPress-F5>", lambda event: start_countdown(root, action_frame, users, network))
 
 
 def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 5, countdown_label: Optional[tk.Label] = None) -> None:
@@ -72,11 +72,6 @@ def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[U
 
 def start_game(users: Dict[str, List[User]], network: Networking) -> None:
     """Logic to start the game after the countdown."""
+    network.transmit_start_game_code()
     print("Game has started!")
     # Send signals via network or enable game controls here
-    # Returns a signal 202 after the counter ends. I tried here to some prints but i need to check with the sockets if the code is actually being sent.
-    #if Networking.transmit_start_game_code:
-    if network.transmit_start_game_code():
-        print("Attempting 202")
-    else:
-        print("Unable to enter 202")
