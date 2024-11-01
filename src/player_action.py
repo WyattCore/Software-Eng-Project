@@ -51,7 +51,7 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     root.bind("<KeyPress-F5>", lambda event: start_countdown(root, action_frame, users, network))
 
 
-def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 5, countdown_label: Optional[tk.Label] = None) -> None:
+def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 30, countdown_label: Optional[tk.Label] = None) -> None:
     """Start the countdown timer on the player action screen."""
     if countdown_label is None:
         # Create the countdown label once

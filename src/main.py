@@ -52,8 +52,8 @@ def destroy_root(root: tk.Tk, network: Networking) -> None:
     root.destroy()
     
 def show_player_action_screen(root: tk.Tk, users: Dict[str, List[User]]) -> None:
-	 """Displays the player action screen after player entry is completed."""
-	 player_action.PlayerAction(root, users)
+	"""Displays the player action screen after player entry is completed."""
+	player_action.PlayerAction(root, users)
 
 def main() -> None:
     # Declare dictionary for storing user information
