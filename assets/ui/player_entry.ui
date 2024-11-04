@@ -1239,18 +1239,31 @@
         </child>
       </object>
     </child>
-    <child>
-      <object class="tk.Button" id="submit" named="True">
-        <property name="font">{Fixedsys} 12 {}</property>
-        <property name="highlightbackground">#ffffff</property>
-        <property name="state">normal</property>
-        <property name="text" translatable="yes">Continue</property>
-        <layout manager="grid">
-          <property name="column">0</property>
-          <property name="pady">5</property>
-          <property name="row">1</property>
-        </layout>
-      </object>
-    </child>
+	<child>
+		<object class="tk.Button" id="clear" named="True">
+			<property name="font">{Fixedsys} 12 {}</property>
+			<property name="highlightbackground">#ffffff</property>
+			<property name="state">normal</property>
+			<property name="text" translatable="yes">Clear All</property>
+			<layout manager="grid">
+				<property name="column">0</property>
+				<property name="pady">5</property>
+				<property name="row">1</property>
+			</layout>
+		</object>
+	</child>
+	<child>
+		<object class="tk.Button" id="submit" named="True">
+			<property name="font">{Fixedsys} 12 {}</property>
+			<property name="highlightbackground">#ffffff</property>
+			<property name="state">normal</property>
+			<property name="text" translatable="yes">Continue</property>
+			<layout manager="grid">
+				<property name="column">1</property>
+				<property name="pady">5</property>
+				<property name="row">1</property>
+			</layout>
+		</object>
+	</child>
   </object>
 </interface>
