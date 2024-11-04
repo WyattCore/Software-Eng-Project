@@ -186,4 +186,7 @@ def build(root: tk.Tk, users: Dict, network: Networking) -> None:
 
     # Bind continue button to F5 function for moving on to play action screen
     cont_button: tk.Button = builder.get_object("submit", main_frame)
+    cont_button2: tk.Button = builder.get_object("clear", main_frame)
+    
     cont_button.configure(command=lambda: on_f5(main_frame, root, users, network))
+    cont_button2.configure(command=lambda: on_f12(main_frame, entry_ids, users, builder))
