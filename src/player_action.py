@@ -7,6 +7,8 @@ import pygubu
 from networking import Networking
 from user import User
 
+Game_time = 360
+
 def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], network: Networking) -> None:
     # Load the UI file and create the builder for the player action screen
     builder: pygubu.Builder = pygubu.Builder()
