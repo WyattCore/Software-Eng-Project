@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict, List, Optional
+import pygame
 import pygubu
 
 from networking import Networking
@@ -50,6 +51,15 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     # Bind F5 to start the countdown with correct arguments
     root.bind("<KeyPress-F5>", lambda event: start_countdown(root, action_frame, users, network))
 
+def start_music() -> None:
+    """Plays the background track when the countdown reaches 14."""
+    pygame.mixer.init()  # Initialize the mixer module
+    pygame.mixer.music.load("assets/tracks/Track01.mp3")
+    pygame.mixer.music.play(-1)  # Play the music on loop
+
+def stop_music() -> None:
+    """Stops the background track."""
+    pygame.mixer.music.stop()
 
 def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 30, countdown_label: Optional[tk.Label] = None) -> None:
     """Start the countdown timer on the player action screen."""
@@ -58,20 +68,22 @@ def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[U
         countdown_label = tk.Label(action_frame, text=str(count), font=("Helvetica", 64))
         countdown_label.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
 
+    if count == 15:
+        start_music()
+
     if count > 0:
         # Update the countdown label each second
         countdown_label.config(text=str(count))
         root.after(1000, start_countdown, root, action_frame, users, network, count - 1, countdown_label)
     else:
         # Countdown is complete, start the game
-        countdown_label.config(text="GO!")
+        countdown_label.config(text="BEGIN!")
         root.after(1000, countdown_label.destroy)  # Destroy label after 1 second
         start_game(users, network)
-
-
 
 def start_game(users: Dict[str, List[User]], network: Networking) -> None:
     """Logic to start the game after the countdown."""
     network.transmit_start_game_code()
     print("Game has started!")
     # Send signals via network or enable game controls here
+
