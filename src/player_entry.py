@@ -67,7 +67,8 @@ def on_tab(event: tk.Event, root: tk.Tk, entry_ids: Dict, users: Dict, builder: 
                 return
 
             # Add user to dictionary, starting with score 0
-            users["blue" if "blue" in entry_field_id else "red"].append(User(int(entry_field_id.split("_")[-1]), equipment_id, user_id, codename))
+            # Here is where we use after_idle to ensure we update the UI smoothly
+            root.after_idle(lambda: users["blue"].append(User(int(entry_field_id.split("_")[-1]), equipment_id, user_id, codename)) if "blue" in entry_field_id else users["red"].append(User(int(entry_field_id.split("_")[-1]), equipment_id, user_id, codename)))
 
             # Autofill the codename entry field
             builder.get_object(entry_field_id.replace("user_id", "codename"), root).insert(0, codename)
@@ -126,6 +127,8 @@ def on_f12(main_frame: tk.Tk, entry_ids: Dict, users: Dict, builder: pygubu.Buil
 
 def on_f5(main_frame: tk.Tk, root: tk.Tk, users: Dict, network: Networking) -> None:
     # If there is not at least 1 user for each team, display error message and return
+    print("Blue team:", len(users["blue"]), "Red team:", len(users["red"]))
+
     if len(users["blue"]) < 1 or len(users["red"]) < 1:
         messagebox.showerror("Error", "There must be at least 1 user on each team")
         return
