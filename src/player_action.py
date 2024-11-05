@@ -80,6 +80,25 @@ def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[U
         countdown_label.config(text="BEGIN!")
         root.after(1000, countdown_label.destroy)  # Destroy label after 1 second
         start_game(users, network)
+        gameTimer(root, action_frame, network, Game_time)
+
+def gameTimer(root: tk.Tk, action_frame: tk.Frame, users:Dict[str, List[User]], network: Networking, count: int = 360, gameplay_label: Optional[tk.Label] = None) -> None:
+    #obtaining time format
+    seconds = count % 60 
+    minutes = count // 60 
+    time = f"{minutes:02}:{seconds:02}"
+    if gameplay_label is None:
+        gameplay_label = tk.Label(action_frame, text = "Remaining Time: " + time, font=("Helveticia", 16))
+        gameplay_label.place(relx= 1.0, rely = 1.0, anchor = "se")
+    
+    if count > 0:
+        gameplay_label.config(text="Remaining Time: " + time)
+        root.after(1000, gameTimer, root, action_frame, users, network, count - 1, gameplay_label) 
+    else:
+        gameplay_label.config(text="Time done!")
+        root.after(1000, gameplay_label.destroy)
+       # if network.transmit_end_game_code():
+        #    print("Game done!)
 
 def start_game(users: Dict[str, List[User]], network: Networking) -> None:
     """Logic to start the game after the countdown."""
