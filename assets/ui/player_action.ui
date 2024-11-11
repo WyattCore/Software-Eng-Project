@@ -72,6 +72,24 @@
       </object>
     </child>
 
+    <!-- Back to Entry Button -->
+    <child>
+      <object class="ttk.Button" id="back_button" named="True">
+        <property name="compound">top</property>
+        <property name="cursor">arrow</property>
+        <property name="default">normal</property>
+        <property name="state">normal</property>
+        <property name="text" translatable="yes">Back to Entry</property>
+        <layout manager="place">
+          <property name="anchor">nw</property>
+          <property name="relx">0.40</property> <!-- Adjust to place to the left of Start Game -->
+          <property name="rely">0.89</property>
+          <property name="x">0</property>
+          <property name="y">0</property>
+        </layout>
+      </object>
+    </child>
+
     <!-- Start Game Button -->
     <child>
       <object class="ttk.Button" id="play_button" named="True">
@@ -82,7 +100,7 @@
         <property name="text" translatable="yes">Start Game</property>
         <layout manager="place">
           <property name="anchor">nw</property>
-          <property name="relx">0.48</property>
+          <property name="relx">0.60</property>
           <property name="rely">0.89</property>
           <property name="x">0</property>
           <property name="y">0</property>
