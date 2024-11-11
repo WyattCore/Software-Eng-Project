@@ -144,10 +144,11 @@ def on_f5(main_frame: tk.Tk, root: tk.Tk, users: Dict, network: Networking) -> N
             network.transmit_equipment_code(user.equipment_id)
 
     # Remove frame from screen without destroying it
-    main_frame.destroy()
+    main_frame.place_forget()
     
     #show player action screen
-    build_player_action_screen(root, users, network)
+    build_player_action_screen(root, users, network, main_frame)
+    
     
 def build(root: tk.Tk, users: Dict, network: Networking) -> None:
     # Load the UI file and create the builder
