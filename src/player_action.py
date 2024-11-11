@@ -7,9 +7,9 @@ import pygubu
 from networking import Networking
 from user import User
 
-Game_time = 360
+Game_time = 10
 
-def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], network: Networking) -> None:
+def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], network: Networking, main_frame : tk.Frame) -> None:
     # Load the UI file and create the builder for the player action screen
     builder: pygubu.Builder = pygubu.Builder()
     builder.add_from_file("assets/ui/player_action.ui")
@@ -50,8 +50,19 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     play_button: tk.Button = builder.get_object("play_button", action_frame)
     play_button.configure(command=lambda: start_countdown(root, action_frame, users, network))
     
+    #back to player_entry screen button
+    back_button: tk.Button = builder.get_object("back_button", action_frame)
+    back_button.configure(command=lambda: return_to_entry_screen(action_frame, main_frame))
+    
     # Bind F5 to start the countdown with correct arguments
     root.bind("<KeyPress-F5>", lambda event: start_countdown(root, action_frame, users, network))
+
+def return_to_entry_screen(action_screen, main_frame: tk.Frame):
+	stop_music()
+	action_screen.destroy()
+	main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+	
+
 
 def start_music() -> None:
     """Plays the background track when the countdown reaches 14."""
@@ -63,7 +74,7 @@ def stop_music() -> None:
     """Stops the background track."""
     pygame.mixer.music.stop()
 
-def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 30, countdown_label: Optional[tk.Label] = None) -> None:
+def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 20, countdown_label: Optional[tk.Label] = None) -> None:
     """Start the countdown timer on the player action screen."""
     if countdown_label is None:
         # Create the countdown label once
@@ -82,9 +93,9 @@ def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[U
         countdown_label.config(text="BEGIN!")
         root.after(1000, countdown_label.destroy)  # Destroy label after 1 second
         start_game(users, network)
-        gameTimer(root, action_frame, network, Game_time)
+        gameTimer(root, action_frame, users, network, Game_time)
 
-def gameTimer(root: tk.Tk, action_frame: tk.Frame, users:Dict[str, List[User]], network: Networking, count: int = 360, gameplay_label: Optional[tk.Label] = None) -> None:
+def gameTimer(root: tk.Tk, action_frame: tk.Frame, users:Dict[str, List[User]], network: Networking, count: int = 10, gameplay_label: Optional[tk.Label] = None) -> None:
     #obtaining time format
     seconds = count % 60 
     minutes = count // 60 
@@ -99,6 +110,7 @@ def gameTimer(root: tk.Tk, action_frame: tk.Frame, users:Dict[str, List[User]], 
     else:
         gameplay_label.config(text="Time done!")
         root.after(1000, gameplay_label.destroy)
+        end_game(users, network)
        # if network.transmit_end_game_code():
         #    print("Game done!)
 
@@ -107,4 +119,11 @@ def start_game(users: Dict[str, List[User]], network: Networking) -> None:
     network.transmit_start_game_code()
     print("Game has started!")
     # Send signals via network or enable game controls here
+    
+def end_game(users: Dict[str, List[User]], network: Networking) -> None:
+	stop_music()
+	network.transmit_end_game_code()
+	network.transmit_end_game_code()
+	network.transmit_end_game_code()
+	print("Game has ended!")
 
