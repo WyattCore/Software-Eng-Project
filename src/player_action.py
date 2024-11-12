@@ -108,9 +108,9 @@ def gameTimer(root: tk.Tk, action_frame: tk.Frame, users:Dict[str, List[User]], 
         gameplay_label.config(text="Remaining Time: " + time)
         root.after(1000, gameTimer, root, action_frame, users, network, count - 1, gameplay_label) 
     else:
-        gameplay_label.config(text="Time done!")
-        root.after(1000, gameplay_label.destroy)
-        end_game(users, network)
+        gameplay_label.config(text="GAME OVER")
+        #Sroot.after(1000, gameplay_label.destroy)
+        end_game(users, network, gameplay_label)
        # if network.transmit_end_game_code():
         #    print("Game done!)
 
@@ -120,7 +120,8 @@ def start_game(users: Dict[str, List[User]], network: Networking) -> None:
     print("Game has started!")
     # Send signals via network or enable game controls here
     
-def end_game(users: Dict[str, List[User]], network: Networking) -> None:
+def end_game(users: Dict[str, List[User]], network: Networking, gameplay_label: tk.Label) -> None:
+	gameplay_label.destroy
 	stop_music()
 	network.transmit_end_game_code()
 	network.transmit_end_game_code()
