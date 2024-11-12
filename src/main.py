@@ -10,6 +10,7 @@ from user import User
 import splash_screen
 import player_entry
 import player_action
+from threading import Thread
 
 if os.name == "nt":
     import winsound
@@ -47,6 +48,7 @@ def build_root() -> tk.Tk:
 def destroy_root(root: tk.Tk, network: Networking) -> None:
     if os.name == "nt":
         winsound.PlaySound(None, winsound.SND_ASYNC)
+    #network.running = False
     network.close_sockets()
     db.close()  # Close the database connection
     root.destroy()
@@ -66,6 +68,9 @@ def main() -> None:
     # Create networking object
     network: Networking = Networking()
     network.set_sockets()
+    
+    listener_thread = Thread(target=network.traffic_listener, daemon=True)
+    listener_thread.start()
 
     # Call build_root function to build the root window
     root: tk.Tk = build_root()
@@ -84,6 +89,8 @@ def main() -> None:
 
     # Run the main loop
     root.mainloop()
+    
+    #network.running = False
 
 if __name__ == "__main__":
     main()
