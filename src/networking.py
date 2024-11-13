@@ -74,7 +74,22 @@ class Networking:
         except Exception as e:
             print(e)
             return False
+	
+    def traffic_listener(self) -> None:
+        print("Listening for traffic")
+        while True:
+            try:
+                received_data, address = self.receive_socket.recvfrom(BUFFER_SIZE)
+                decoded_data = received_data.decode("utf-8")
 
+                print(f"Received data: {decoded_data} from {address}")
+
+                if decoded_data == str(END_GAME_CODE):
+                    print("Game over, listener stopped")
+                    break
+            except Exception as e:
+                print(f"Error while receiving data: {e}")
+                break
    
         # Transmit player hit code to the broadcast address
        
