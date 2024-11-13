@@ -16,6 +16,7 @@
   ```    
   sudo apt-get install python3-tk
   sudo apt install python3-pip
+  sudo apt-get install python3-pygame
   python3 -m pip install typing
   python3 -m pip install Pillow
   pip install psycopg2-binary
