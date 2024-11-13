@@ -1,105 +1,93 @@
-#Module to handle UDP networking for the Photon laser tag system communication between the control console and the packs.
-
 from typing import Dict, List
-import socket
-import time
+import os
+import tkinter as tk
+import psycopg2
+from psycopg2 import sql
 
+from networking import Networking
+from database import Database  # Import the Database class
 from user import User
+import splash_screen
+import player_entry
+import player_action
+from threading import Thread
 
-# Defining constants for transmitting and receiving codes
-START_GAME_CODE: int = 202
-END_GAME_CODE: int = 221
-RED_BASE_SCORED_CODE: int = 53
-GREEN_BASE_SCORED_CODE: int = 43
-BUFFER_SIZE: int = 1024
-GAME_TIME_SECONDS: int = 360 # Seconds
-BROADCAST_ADDRESS: str = "127.0.0.1"
-RECEIVE_ALL_ADDRESS: str = "0.0.0.0"
-TRANSMIT_PORT: int = 7500
-RECEIVE_PORT: int = 7501
+if os.name == "nt":
+    import winsound
 
-class Networking:
-    def __init__(self) -> None:
-        pass
+
+# Define PostgreSQL connection parameters
+connection_params = {
+    'dbname': 'photon',
+    'user': 'student',
+    'password': 'student',
+    'host': 'localhost',
+    'port': '5432'
+}
+
+# Initialize the Database instance
+db = Database()
+db.connect()  # Establish the connection
+db.create_table()
+
+def build_root() -> tk.Tk:
+    # Build main window, set title, make fullscreen
+    root: tk.Tk = tk.Tk()
+    root.title("Photon")
+    root.configure(background="white")
+
+    # Force window to fill screen, place at top left
+    width: int = root.winfo_screenwidth()
+    height: int = root.winfo_screenheight()
+    root.geometry(f"{width}x{height}+0+0")
+
+    # Disable resizing
+    root.resizable(False, False)
+    return root
+
+def destroy_root(root: tk.Tk, network: Networking) -> None:
+    if os.name == "nt":
+        winsound.PlaySound(None, winsound.SND_ASYNC)
+    network.close_sockets()
+    db.close()  # Close the database connection
+    root.destroy()
     
-    def set_sockets(self) -> bool:
-        # Set up transmit and receive sockets
-        try:
-            self.transmit_socket: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.receive_socket: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.receive_socket.bind((RECEIVE_ALL_ADDRESS, RECEIVE_PORT))
-            return True
-        except Exception as e:
-            print(e)
-            return False
+def show_player_action_screen(root: tk.Tk, users: Dict[str, List[User]]) -> None:
+	"""Displays the player action screen after player entry is completed."""
+	player_action.PlayerAction(root, users)
 
-    def close_sockets(self) -> bool:
-        # Close transmit and receive sockets
-        try:
-            self.transmit_socket.close()
-            self.receive_socket.close()
-            return True
-        except Exception as e:
-            print(e)
-            return False
+def main() -> None:
+    # Declare dictionary for storing user information
+    # Format: { team: [User, User, ...] }
+    users: Dict[str, List[User]] = {
+        "blue": [],
+        "red": []
+    }
 
-    def transmit_equipment_code(self, equipment_code: str) -> bool:
-        # Enable broadcasts at the syscall level and priviledged process
-        # Transmit provided equipment code to the broadcast address
-        try:
-            self.transmit_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            self.transmit_socket.sendto(str.encode(str(equipment_code)), (BROADCAST_ADDRESS, TRANSMIT_PORT))
-            return True
-        except Exception as e:
-            print(e)
-            return False
+    # Create networking object
+    network: Networking = Networking()
+    network.set_sockets()
     
-    def transmit_start_game_code(self) -> bool:
-        # Transmit start game code to the broadcast address
-        try:
-            self.transmit_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            self.transmit_socket.sendto(str.encode(str(START_GAME_CODE)), (BROADCAST_ADDRESS, TRANSMIT_PORT))
-            print("Transmitted")
-            return True
-        except Exception as e:
-            print(e)
-            return False
-            
-    def transmit_end_game_code(self) -> bool:
-        # Transmit end game code to the broadcast address
-        try:
-            self.transmit_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            self.transmit_socket.sendto(str.encode(str(END_GAME_CODE)), (BROADCAST_ADDRESS, TRANSMIT_PORT))
-            return True
-        except Exception as e:
-            print(e)
-            return False
+    listener_thread = Thread(target=network.traffic_listener, daemon=True)
+    listener_thread.start()
 
-    def traffic_listener(self) -> None:
-        print("Listening for traffic")
-        while True:
-            try:
-                received_data, address = self.receive_socket.recvfrom(BUFFER_SIZE)
-                decoded_data = received_data.decode("utf-8")
+    # Call build_root function to build the root window
+    root: tk.Tk = build_root()
 
-                print(f"Received data: {decoded_data} from {address}")
+    # Bind escape key and window close button to destroy_root function
+    root.bind("<Escape>", lambda event: destroy_root(root, network))
+    root.protocol("WM_DELETE_WINDOW", lambda: destroy_root(root, network))
 
-                if decoded_data == str(END_GAME_CODE):
-                    print("Game is over, done listening")
-                    break
-            except Exception as e:
-                print(f"Error while receiving data: {e}")
-                break
-   
-   
-        # Transmit player hit code to the broadcast address
-       
-       
-        # While the game is still running, receive data from the receive socket
-        
-            # If the red base is hit, attribute 100 points to green team and vice versa
-            # If player was hit instead, attribute 10 points to the attacker
-            
-        # Once game ends, transmit end game code 3 times
-       
-    
+    # Build the splash screen
+    splash: splash_screen = splash_screen.build(root)
+
+    # After 3 seconds, destroy the splash screen and build the player entry screen
+    # Play action screen will be built after F5 is pressed on player entry screen (see on_f5 function in src/player_entry.py)
+    root.after(3000, splash.destroy)
+    root.after(3000, player_entry.build, root, users, network)
+
+    # Run the main loop
+    root.mainloop()
+
+if __name__ == "__main__":
+    main() 
