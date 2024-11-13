@@ -17,17 +17,32 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     # Create the player action screen frame and place it in the root window
     action_frame: tk.Frame = builder.get_object("action_frame", root)
     action_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
     # Configure team Treeviews for Blue and Red teams
-    blue_team_tree = ttk.Treeview(action_frame, columns=("ID", "Codename"), show="headings")
+    blue_team_tree = ttk.Treeview(action_frame, columns=("Base","ID", "Codename","Score"), show="headings")
     blue_team_tree.heading("ID", text="ID")
     blue_team_tree.heading("Codename", text="Codename")
+    blue_team_tree.heading("Score", text="Score")
+    blue_team_tree.heading("Base", text = "Base")
+    #column adjustments
+    blue_team_tree.column("ID", width=100)
+    blue_team_tree.column("Codename", width = 200)
+    blue_team_tree.column("Score", width = 100)
+    blue_team_tree.column("Base", width = 50)
     blue_team_tree.place(relx=0.05, rely=0.1, anchor=tk.NW)
+    
+    
 
     # Configure the red team Treeview
-    red_team_tree = ttk.Treeview(action_frame, columns=("ID", "Codename"), show="headings")
+    red_team_tree = ttk.Treeview(action_frame, columns=("Base","ID", "Codename","Score"), show="headings")
     red_team_tree.heading("ID", text="ID")
     red_team_tree.heading("Codename", text="Codename")
+    red_team_tree.heading("Score", text="Score")
+    red_team_tree.heading("Base", text="Base")
+    red_team_tree.column("ID", width=100)
+    red_team_tree.column("Codename", width = 200)
+    red_team_tree.column("Score", width = 100)
+    red_team_tree.column("Base", width = 50)
+    red_team_tree.place(relx=0.05, rely=0.1, anchor=tk.NW)
     red_team_tree.place(relx=0.55, rely=0.1, anchor=tk.NW)
 
     # Set the background color of the tables
@@ -79,7 +94,7 @@ def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[U
     if countdown_label is None:
         # Create the countdown label once
         countdown_label = tk.Label(action_frame, text=str(count), font=("Helvetica", 64))
-        countdown_label.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+        countdown_label.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
 
     if count == 15:
         start_music()
