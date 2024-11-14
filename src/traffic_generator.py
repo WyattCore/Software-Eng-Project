@@ -1,81 +1,77 @@
 import socket
 import random
 import time
-from typing import Tuple
 
-# Declaring constants for socket communication info
-BUFFER_SIZE: int = 1024
-SERVER_ADDRESS_PORT: Tuple[str, int] = ("127.0.0.1", 7500)
-CLIENT_ADDRESS_PORT: Tuple[str, int] = ("127.0.0.1", 7501)
-START_CODE: str = "202"
-END_CODE: str = "221"
-
-# Function to get user input for player IDs
-def get_player_id(color: str, player_number: int) -> str:
-    return input(f"Enter equipment id of {color} player {player_number} ==> ")
-
-# Function to wait for start code transmission from game software
-def wait_for_start(sock: socket.socket) -> None:
-    print("\nWaiting for start from game software")
-    received_data: str = ""
-
-    while received_data != START_CODE:  # Wait for the start code
-        received_data, address = sock.recvfrom(BUFFER_SIZE)  # Receive data
-        received_data = received_data.decode("utf-8")  # Decode the received data
-        print(f"Received from game software: {received_data}")  # Print the received data
-
-    # This part will be executed after the while loop finishes (when start code is received)
-    if received_data == '202':  # Check if the received data is the start code
-        print("Game started!")
+bufferSize  = 1024
+serverAddressPort   = ("127.0.0.1", 7500)
+clientAddressPort   = ("127.0.0.1", 7501)
 
 
-def main() -> None:
-    # Print instructions, get plater IDs
-    print("This program will generate some test traffic for 2 players\n"
-            "on the blue team as well as 2 players on the red team.\n")
-    
-    print("Once the start code is received from the game software,\n"
-            "the program will randomly select 2 players. The format\n"
-            "of the message is player1:player2, meaning that player1\n"
-            "has hit player2. If you wish to exit, type 'y' when prompted.\n")
+print('this program will generate some test traffic for 2 players on the red ')
+print('team as well as 2 players on the green team')
+print('')
 
-    blue1: str = get_player_id("blue", 1)
-    blue2: str = get_player_id("blue", 2)
-    red1: str = get_player_id("red", 1)
-    red2: str = get_player_id("red", 2)
+red1 = input('Enter equipment id of red player 1 ==> ')
+red2 = input('Enter equipment id of red player 2 ==> ')
+green1 = input('Enter equipment id of green player 1 ==> ')
+green2 = input('Enter equipment id of green player 2 ==> ')
 
-    # Create sockets for server-side receiving and client-side transmitting
-    UDPServerSocketReceive: socket.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-    UDPServerSocketReceive.bind(SERVER_ADDRESS_PORT)
-    UDPClientSocketTransmit: socket.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-    wait_for_start(UDPServerSocketReceive)
+# Create datagram sockets
+UDPServerSocketReceive = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+UDPClientSocketTransmit = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
-    while True:
-        # Randomly select a blue and red player
-        blueplayer: str = blue1 if random.randint(1, 2) == 1 else blue2
-        redplayer: str = red1 if random.randint(1, 2) == 1 else red2
-        message: str = f"{blueplayer}:{redplayer}" if random.randint(1,2) == 1 else f"{redplayer}:{blueplayer}"
-        print(f"\n{message}")
+# bind server socket
+UDPServerSocketReceive.bind(serverAddressPort)
 
-        # If user wishes to continue, send message to game software
-        if input("Exit? (y/n): ") == "y":
-            exit(0)
-        print(f"Sending to game software: {message}")
-        UDPClientSocketTransmit.sendto(str.encode(str(message)), CLIENT_ADDRESS_PORT)
+# wait for start from game software
+print ("")
+print ("waiting for start from game_software")
 
-        # Receive data from game software
-        received_data: str
-        address: Tuple[str, int]
-        received_data, address = UDPServerSocketReceive.recvfrom(BUFFER_SIZE)
-        received_data = received_data.decode("utf-8")
-        print(f"Received from game software: {received_data}")
+received_data = ' '
+while received_data != '202':
+	received_data, address = UDPServerSocketReceive.recvfrom(bufferSize)
+	received_data = received_data.decode('utf-8')
+	print ("Received from game software: " + received_data)
+print ('')
 
-        # If received data is the end code, break out of loop
-        if received_data == END_CODE:
-            break
-        time.sleep(random.randint(1,3))
+# create events, random player and order
+counter = 0
 
-    print("Program complete")
+while True:
+	if random.randint(1,2) == 1:
+		redplayer = red1
+	else:
+		redplayer = red2
 
-if __name__ == "__main__":
-    main()
+	if random.randint(1,2) == 1:
+		greenplayer = green1
+	else: 
+		greenplayer = green2	
+
+	if random.randint(1,2) == 1:
+		message = str(redplayer) + ":" + str(greenplayer)
+	else:
+		message = str(greenplayer) + ":" + str(redplayer)
+		
+	# after 10 iterations, send base hit
+	if counter == 10:
+		message = str(redplayer) + ":43"
+	if counter == 20:
+		message = str(greenplayer) + ":53"
+		
+	print("transmitting to game: " + message)
+	
+	UDPClientSocketTransmit.sendto(str.encode(str(message)), clientAddressPort)
+	# receive answer from game softare
+	
+	
+	received_data, address = UDPServerSocketReceive.recvfrom(bufferSize)
+	received_data = received_data.decode('utf-8')
+	print ("Received from game software: " + received_data)
+	print ('')
+	counter = counter + 1;
+	if received_data == '221':
+		break;
+	time.sleep(random.randint(1,3))
+	
+print("program complete")
