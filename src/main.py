@@ -10,7 +10,6 @@ from user import User
 import splash_screen
 import player_entry
 import player_action
-from threading import Thread
 
 if os.name == "nt":
     import winsound
