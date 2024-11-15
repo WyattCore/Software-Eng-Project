@@ -11,9 +11,15 @@ connection_params = {
 }
 
 class Database:
-    def __init__(self):
-        self.conn = None
-        self.cursor = None
+    _instance = None  # This will hold the single instance of the class
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Database, cls).__new__(cls)  # Create a new instance if none exists
+            cls._instance.conn = None  # Connection will be created later
+            cls._instance.cursor = None  # Cursor will be created later
+        return cls._instance  # Return the single instance
+
 
     def connect(self):
         try:
