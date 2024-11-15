@@ -3,6 +3,7 @@ from tkinter import ttk
 from typing import Dict, List, Optional
 import pygame
 import pygubu
+import random
 import threading
 from networking import Networking
 from user import User
@@ -61,7 +62,14 @@ def populate_team_treeview(tree: ttk.Treeview, users: List[User]) -> None:
 
 def start_music() -> None:
     pygame.mixer.init()
-    pygame.mixer.music.load("assets/tracks/Track01.mp3")
+
+    # Create a list of available tracks
+    track_list = [f"assets/tracks/Track0{i}.mp3" for i in range(1, 9)]
+    # Randomly choose a track from the list
+    chosen_track = random.choice(track_list)
+    
+    # Load and play the chosen track
+    pygame.mixer.music.load(chosen_track)
     pygame.mixer.music.play(-1)
 
 def stop_music() -> None:
