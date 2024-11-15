@@ -10,6 +10,7 @@ from user import User
 import splash_screen
 import player_entry
 import player_action
+from threading import Thread
 
 if os.name == "nt":
     import winsound
@@ -52,8 +53,8 @@ def destroy_root(root: tk.Tk, network: Networking) -> None:
     root.destroy()
     
 def show_player_action_screen(root: tk.Tk, users: Dict[str, List[User]]) -> None:
-	"""Displays the player action screen after player entry is completed."""
-	player_action.PlayerAction(root, users)
+    """Displays the player action screen after player entry is completed."""
+    player_action.PlayerAction(root, users)
 
 def main() -> None:
     # Declare dictionary for storing user information
@@ -67,6 +68,9 @@ def main() -> None:
     network: Networking = Networking()
     network.set_sockets()
     
+    listener_thread = Thread(target=network.traffic_listener, daemon=True)
+    listener_thread.start()
+
     # Call build_root function to build the root window
     root: tk.Tk = build_root()
 
@@ -78,12 +82,12 @@ def main() -> None:
     splash: splash_screen = splash_screen.build(root)
 
     # After 3 seconds, destroy the splash screen and build the player entry screen
-    # Play action screen will be built after F5 is pressed on player entry screen (see on_f5 function in src/player_entry.py)
+    # Pass the 'db' object along with other arguments
     root.after(3000, splash.destroy)
-    root.after(3000, player_entry.build, root, users, network)
+    root.after(3000, player_entry.build, root, users, network, db)  # Pass db to build function
 
     # Run the main loop
     root.mainloop()
 
 if __name__ == "__main__":
-    main() 
+    main()
