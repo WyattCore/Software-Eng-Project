@@ -127,14 +127,17 @@ def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]],
         for team_name, team_users in users.items():
             for user in team_users: 
                 if user.user_id == shooter_id:
-                    if target_id == 43:
+                    if target_id == 43 and user.team == "red":
                         user.game_score += 100
                         user.has_hit_base = True
                         network.transmit_player_hit(target_id)
-                    elif target_id == 53: 
+                    elif target_id == 53 and user.team == "blue": 
                         user.game_score += 100
                         user.has_hit_base = True
                         network.transmit_player_hit(target_id)
+                    else:
+                        network.transmit_player_hit(target_id)  # Corrected indentation
+
     else:
         # Normal handling for other target_ids
         if target_user != None:
