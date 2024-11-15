@@ -9,8 +9,8 @@ from user import User
 
 Game_time = 10  # Game duration in seconds
 
-
-def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], network: Networking, main_frame: tk.Frame) -> None:
+def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], network: Networking, main_frame: tk.Frame, return_to_entry_screen, builder, entry_ids, db, user_data) -> None:
+    # Load the player action UI and set up the action screen
     builder = pygubu.Builder()
     builder.add_from_file("assets/ui/player_action.ui")
     
@@ -30,17 +30,17 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     play_button.configure(command=lambda: start_countdown(root, action_frame, users, network))
     
     back_button: tk.Button = builder.get_object("back_button", action_frame)
-    back_button.configure(command=lambda: return_to_entry_screen(action_frame, main_frame))
+    back_button.configure(
+    command=lambda: return_to_entry_screen(root, action_frame, main_frame, builder, entry_ids, users, db)
+    )
     
     # Listener thread for receiving traffic
-    print("HELLO")
     listener_thread = threading.Thread(
-    target=network.traffic_listener,
-    args=(lambda shooter, target: update_scores(shooter, target, users, blue_team_tree, red_team_tree),),
-    daemon=True,
+        target=network.traffic_listener,
+        args=(lambda shooter, target: update_scores(shooter, target, users, blue_team_tree, red_team_tree),),
+        daemon=True,
     )
     listener_thread.start()
-
 
 def create_team_treeview(parent: tk.Frame, team_name: str, relx: float) -> ttk.Treeview:
     tree = ttk.Treeview(parent, columns=("Base", "ID", "Codename", "Score"), show="headings")
@@ -55,27 +55,17 @@ def create_team_treeview(parent: tk.Frame, team_name: str, relx: float) -> ttk.T
     tree.configure(style=f"{team_name}.Treeview")
     return tree
 
-
 def populate_team_treeview(tree: ttk.Treeview, users: List[User]) -> None:
     for user in users:
         tree.insert("", "end", values=(user.has_hit_base, user.user_id, user.codename, user.game_score))
-
-
-def return_to_entry_screen(action_screen: tk.Frame, main_frame: tk.Frame) -> None:
-    stop_music()
-    action_screen.destroy()
-    main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
 
 def start_music() -> None:
     pygame.mixer.init()
     pygame.mixer.music.load("assets/tracks/Track01.mp3")
     pygame.mixer.music.play(-1)
 
-
 def stop_music() -> None:
     pygame.mixer.music.stop()
-
 
 def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 20, countdown_label: Optional[tk.Label] = None) -> None:
     if countdown_label is None:
@@ -93,7 +83,6 @@ def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[U
         start_game(users, network)
         game_timer(root, action_frame, users, network, Game_time)
 
-
 def game_timer(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int, gameplay_label: Optional[tk.Label] = None) -> None:
     minutes, seconds = divmod(count, 60)
     time_str = f"{minutes:02}:{seconds:02}"
@@ -109,11 +98,9 @@ def game_timer(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]]
         gameplay_label.destroy()
         end_game(users, network)
 
-
 def start_game(users: Dict[str, List[User]], network: Networking) -> None:
     network.transmit_start_game_code()
     print("Game has started!")
-
 
 def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]], blue_team_tree: ttk.Treeview, red_team_tree: ttk.Treeview) -> None:
     for team_name, team_users in users.items():
@@ -125,12 +112,10 @@ def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]],
     refresh_team_treeview(blue_team_tree, users.get("blue", []))
     refresh_team_treeview(red_team_tree, users.get("red", []))
 
-
 def refresh_team_treeview(treeview: ttk.Treeview, team_users: List[User]) -> None:
     for item in treeview.get_children():
         treeview.delete(item)
     populate_team_treeview(treeview, team_users)
-
 
 def end_game(users: Dict[str, List[User]], network: Networking) -> None:
     stop_music()
