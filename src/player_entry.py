@@ -62,7 +62,7 @@ def on_tab(event: tk.Event, root: tk.Tk, entry_ids: Dict, users: Dict, builder: 
 
             # Add user to dictionary, starting with score 0
             # Here is where we use after_idle to ensure we update the UI smoothly
-            root.after_idle(lambda: users["blue"].append(User(int(entry_field_id.split("_")[-1]), equipment_id, user_id, codename)) if "blue" in entry_field_id else users["red"].append(User(int(entry_field_id.split("_")[-1]), equipment_id, user_id, codename)))
+            root.after_idle(lambda: users["blue"].append(User(int(entry_field_id.split("_")[-1]), equipment_id, user_id, codename, "blue")) if "blue" in entry_field_id else users["red"].append(User(int(entry_field_id.split("_")[-1]), equipment_id, user_id, codename, "red")))
 
             # Autofill the codename entry field
             builder.get_object(entry_field_id.replace("user_id", "codename"), root).insert(0, codename)
@@ -95,7 +95,7 @@ def on_tab(event: tk.Event, root: tk.Tk, entry_ids: Dict, users: Dict, builder: 
             return
 
         # Add user to dictionary
-        users["blue" if "blue" in entry_field_id else "red"].append(User(int(entry_field_id.split("_")[-1]), equipment_id, user_id, codename))
+        users["blue" if "blue" in entry_field_id else "red"].append(User(int(entry_field_id.split("_")[-1]), equipment_id, user_id, codename, "blue" if "blue" in entry_field_id else "red"))
 
         # Attempt to insert the user into the database, display an error message if the insert fails
         try:
