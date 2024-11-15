@@ -10,7 +10,6 @@ from user import User
 import splash_screen
 import player_entry
 import player_action
-from threading import Thread
 
 if os.name == "nt":
     import winsound
@@ -68,8 +67,7 @@ def main() -> None:
     network: Networking = Networking()
     network.set_sockets()
     
-    listener_thread = Thread(target=network.traffic_listener, daemon=True)
-    listener_thread.start()
+
 
     # Call build_root function to build the root window
     root: tk.Tk = build_root()
