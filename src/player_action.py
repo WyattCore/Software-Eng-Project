@@ -8,7 +8,7 @@ import threading
 from networking import Networking
 from user import User
 
-Game_time = 10  # Game duration in seconds
+Game_time = 30  # Game duration in seconds
 
 def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], network: Networking, main_frame: tk.Frame, return_to_entry_screen, builder, entry_ids, db, user_data) -> None:
     # Load the player action UI and set up the action screen
@@ -38,7 +38,7 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     # Listener thread for receiving traffic
     listener_thread = threading.Thread(
         target=network.traffic_listener,
-        args=(lambda shooter, target: update_scores(shooter, target, users, blue_team_tree, red_team_tree),),
+        args=(lambda shooter, target: update_scores(shooter, target, users, blue_team_tree, red_team_tree, network),),
         daemon=True,
     )
     listener_thread.start()
@@ -75,7 +75,7 @@ def start_music() -> None:
 def stop_music() -> None:
     pygame.mixer.music.stop()
 
-def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int = 20, countdown_label: Optional[tk.Label] = None) -> None:
+def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int =20, countdown_label: Optional[tk.Label] = None) -> None:
     if countdown_label is None:
         countdown_label = tk.Label(action_frame, text=str(count), font=("Helvetica", 64))
         countdown_label.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
@@ -110,13 +110,25 @@ def start_game(users: Dict[str, List[User]], network: Networking) -> None:
     network.transmit_start_game_code()
     print("Game has started!")
 
-def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]], blue_team_tree: ttk.Treeview, red_team_tree: ttk.Treeview) -> None:
+def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]], 
+                  blue_team_tree: ttk.Treeview, red_team_tree: ttk.Treeview, network: Networking) -> None:
+    target_user = None
+    for team_name, team_users in users.items():
+        for user in team_users: 
+            if user.user_id == target_id:
+                target_user = user
+    # Ensure no inconsistent spaces here
     for team_name, team_users in users.items():
         for user in team_users:
-            if user.user_id == shooter_id:
+            if user.user_id == shooter_id and user.team != target_user.team and target_user != None:
                 user.game_score += 10
-            elif user.user_id == target_id:
+                network.transmit_player_hit(target_id)
+            elif user.user_id == shooter_id and user.team == target_user.team and target_user != None:
                 user.game_score -= 10
+                network.transmit_player_hit(target_id)
+
+
+                
     refresh_team_treeview(blue_team_tree, users.get("blue", []))
     refresh_team_treeview(red_team_tree, users.get("red", []))
 
