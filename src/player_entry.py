@@ -120,30 +120,31 @@ def on_f12(main_frame: tk.Tk, entry_ids: Dict, users: Dict, builder: pygubu.Buil
     users["red"].clear()
     
 
-def on_f5(main_frame: tk.Tk, root: tk.Tk, users: Dict, network: Networking, db: Database) -> None:
-    # If there is not at least 1 user for each team, display error message and return
-    print("Blue team:", len(users["blue"]), "Red team:", len(users["red"]))
-
+def on_f5(main_frame: tk.Tk, root: tk.Tk, users: Dict, network: Networking, db: Database, builder: pygubu.Builder, entry_ids: Dict) -> None:
+    # Ensure at least 1 user per team
     if len(users["blue"]) < 1 or len(users["red"]) < 1:
         messagebox.showerror("Error", "There must be at least 1 user on each team")
         return
 
-    # Remove F5, F12, and Tab key bindings
-    root.unbind("<Tab>")
-    root.unbind("<KeyPress-F12>")
-    root.unbind("<KeyPress-F5>")
+    # Insert users into the database
+    try:
+        for team in users:
+            for user in users[team]:
+                # Insert into database, assuming insert_player method exists
+                db.insert_player(user.user_id, user.codename)
+    except Exception as e:
+        messagebox.showerror("Database Error", f"Error inserting player: {e}")
+        return
 
-    # For each equipment ID entry field, transmit the equipment ID
+    # Proceed with network transmission or other logic
     for team in users:
         for user in users[team]:
             network.transmit_equipment_code(user.equipment_id)
 
-    # Remove frame from screen without destroying it
+    # Hide the main frame and proceed to the action screen
     main_frame.place_forget()
-    
-    #show player action screen
-    build_player_action_screen(root, users, network, main_frame)
-    
+    build_player_action_screen(root, users, network, main_frame, return_to_entry_screen, builder, entry_ids, db, users)
+
     
 def build(root: tk.Tk, users: Dict[str, List[User]], network: Networking, db: Database) -> None:
     # Load the UI file and create the builder
@@ -181,47 +182,38 @@ def build(root: tk.Tk, users: Dict[str, List[User]], network: Networking, db: Da
     # Bind keys to lambda functions
     root.bind("<Tab>", lambda event: on_tab(event, root, entry_ids, users, builder, db))
     root.bind("<KeyPress-F12>", lambda event: on_f12(main_frame, entry_ids, users, builder, db))
-    root.bind("<KeyPress-F5>", lambda event: on_f5(main_frame, root, users, network, db))
+    root.bind("<KeyPress-F5>", lambda event: on_f5(main_frame, root, users, network, db, builder, entry_ids))
 
     # Bind continue button to the action screen
-    builder.get_object("submit", main_frame).configure(command=lambda: on_f5(main_frame, root, users, network, db))
+    builder.get_object("submit", main_frame).configure(command=lambda: on_f5(main_frame, root, users, network, db, builder, entry_ids))
     builder.get_object("clear", main_frame).configure(command=lambda: on_f12(main_frame, entry_ids, users, builder, db))
 
 
-def reset_users(users: Dict[str, List[User]]) -> None:
-    """Reset the users dictionary when returning to the player entry screen"""
-    users["blue"].clear()
-    users["red"].clear()
-
-
-def clear_entry_fields(builder: pygubu.Builder, main_frame: tk.Frame, entry_ids: Dict) -> None:
-    """Clear all entry fields in the UI"""
-    for entry_id in entry_ids.values():
-        builder.get_object(entry_id, main_frame).delete(0, tk.END)
-
-
 def rebind_events(builder: pygubu.Builder, main_frame: tk.Tk, root: tk.Tk, users: Dict, network: Networking, entry_ids: Dict, db: Database) -> None:
-    """Rebind all necessary events after returning to the player entry screen"""
+    """Rebind all necessary events after returning to the player entry screen."""
     root.bind("<Tab>", lambda event: on_tab(event, root, entry_ids, users, builder, db))
     root.bind("<KeyPress-F12>", lambda event: on_f12(main_frame, entry_ids, users, builder, db))
-    root.bind("<KeyPress-F5>", lambda event: on_f5(main_frame, root, users, network, db))
+    root.bind("<KeyPress-F5>", lambda event: on_f5(main_frame, root, users, network, db, builder, entry_ids))
 
 
-def return_to_entry_screen(root: tk.Tk, action_screen, main_frame: tk.Frame, builder: pygubu.Builder, entry_ids: Dict, db: Database, users: Dict) -> None:
-    action_screen.place_forget()  # Use place_forget instead of destroy
+def return_to_entry_screen(root: tk.Tk, action_screen, main_frame: tk.Frame, builder: pygubu.Builder, entry_ids: Dict, users: Dict, db: Database) -> None:
+    # Hide the action screen
+    action_screen.place_forget()
+
+    # Re-add the player entry main frame to the root window
     main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-    # Clear entry fields
-    clear_entry_fields(builder, main_frame, entry_ids)
-
-    # Reset users dictionary
-    reset_users(users)
-
-    # Ensure database connection is active
-    db.ensure_connection()
-
+    # Repopulate entry fields with current user data
+    root.after(100, repopulate_entry_fields, builder, main_frame, entry_ids, users)
+    
     # Rebind events
-    rebind_events(root, builder, db, users, entry_ids)
+    rebind_events(builder, main_frame, root, users, entry_ids, db)
 
-    # Set focus on the first equipment ID field
-    builder.get_object("blue_equipment_id_1", main_frame).focus_set()
+def repopulate_entry_fields(builder: pygubu.Builder, main_frame: tk.Frame, entry_ids: Dict, users: Dict) -> None:
+    for team in users:
+        for i, user in enumerate(users[team]):
+            entry_prefix = f"{team}_"
+            # Repopulate the fields with user data
+            builder.get_object(f"{entry_prefix}equipment_id_{i+1}", main_frame).insert(0, str(user.equipment_id))
+            builder.get_object(f"{entry_prefix}user_id_{i+1}", main_frame).insert(0, str(user.user_id))
+            builder.get_object(f"{entry_prefix}codename_{i+1}", main_frame).insert(0, user.codename)
