@@ -113,22 +113,41 @@ def start_game(users: Dict[str, List[User]], network: Networking) -> None:
 def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]], 
                   blue_team_tree: ttk.Treeview, red_team_tree: ttk.Treeview, network: Networking) -> None:
     target_user = None
-    for team_name, team_users in users.items():
-        for user in team_users: 
-            if user.user_id == target_id:
-                target_user = user
-    # Ensure no inconsistent spaces here
-    for team_name, team_users in users.items():
-        for user in team_users:
-            if user.user_id == shooter_id and user.team != target_user.team and target_user != None:
-                user.game_score += 10
-                network.transmit_player_hit(target_id)
-            elif user.user_id == shooter_id and user.team == target_user.team and target_user != None:
-                user.game_score -= 10
-                network.transmit_player_hit(target_id)
+    
+    # Only assign target_user if target_id is not "43" or "53"
+    if target_id != 53 and target_id != 43:
+        for team_name, team_users in users.items():
+            for user in team_users: 
+                if user.user_id == target_id:
+                    target_user = user
+                    break  # Exit the loop once we find the target_user
+    
+    # Special handling for target_id "43" or "53"
+    if target_id == 43 or target_id == 53:
+        for team_name, team_users in users.items():
+            for user in team_users: 
+                if user.user_id == shooter_id:
+                    if target_id == 43:
+                        user.game_score += 100
+                        user.has_hit_base = True
+                        network.transmit_player_hit(target_id)
+                    elif target_id == 53: 
+                        user.game_score += 100
+                        user.has_hit_base = True
+                        network.transmit_player_hit(target_id)
+    else:
+        # Normal handling for other target_ids
+        if target_user != None:
+            for team_name, team_users in users.items():
+                for user in team_users:
+                    if user.user_id == shooter_id and user.team != target_user.team and target_user != None:
+                        user.game_score += 10
+                        network.transmit_player_hit(target_id)
+                    elif user.user_id == shooter_id and user.team == target_user.team and target_user != None:
+                        user.game_score -= 10
+                        network.transmit_player_hit(target_id)
 
 
-                
     refresh_team_treeview(blue_team_tree, users.get("blue", []))
     refresh_team_treeview(red_team_tree, users.get("red", []))
 
