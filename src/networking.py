@@ -94,11 +94,12 @@ class Networking:
                 print(f"Error while receiving data: {e}")
                 break
 
-    def transmit_player_hit(self) -> bool:
+    def transmit_player_hit(self,target_id) -> bool:
         # Transmit player hit code to the broadcast address
+        
         try:
             self.transmit_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            self.transmit_socket.sendto(str(RED_BASE_SCORED_CODE).encode(), (BROADCAST_ADDRESS, TRANSMIT_PORT))
+            self.transmit_socket.sendto(str(target_id).encode(), (BROADCAST_ADDRESS, TRANSMIT_PORT))
             return True
         except Exception as e:
             print(f"Error transmitting player hit: {e}")
