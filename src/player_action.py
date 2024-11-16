@@ -175,7 +175,7 @@ def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]],
 
     refresh_team_treeview(blue_team_tree, users.get("blue", []))
     refresh_team_treeview(red_team_tree, users.get("red", []))
-    
+
     # Update cumulative team scores after the change
     update_team_scores(blue_team_score_label, red_team_score_label, users)
 
@@ -198,7 +198,10 @@ def update_game_event(action_textbox: tk.Text, message: str) -> None:
 def refresh_team_treeview(treeview: ttk.Treeview, team_users: List[User]) -> None:
     for item in treeview.get_children():
         treeview.delete(item)
-    populate_team_treeview(treeview, team_users)
+    # Sort users by score in descending order
+    sorted_users = sorted(team_users, key=lambda user: user.game_score, reverse=True)
+    populate_team_treeview(treeview, sorted_users)
+
 
 def end_game(users: Dict[str, List[User]], network: Networking) -> None:
     stop_music()
