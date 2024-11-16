@@ -36,9 +36,13 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     populate_team_treeview(blue_team_tree, users.get("blue", []))
     populate_team_treeview(red_team_tree, users.get("red", []))
 
-    # Update the score labels initially
-    update_team_scores(blue_team_score_label, red_team_score_label, users)
+    # Create and place the leading team label
+    leading_team_label = tk.Label(action_frame, text="Leading Team: None", font=("Helvetica", 14), fg="black")
+    leading_team_label.place(relx=0.5, rely=0.05, anchor=tk.CENTER)
 
+    # Update the score labels initially
+    update_team_scores(blue_team_score_label, red_team_score_label, users, leading_team_label)
+    
     # Configure buttons
     play_button: tk.Button = builder.get_object("play_button", action_frame)
     play_button.configure(command=lambda: start_countdown(root, action_frame, users, network))
@@ -47,11 +51,11 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     back_button.configure(
         command=lambda: return_to_entry_screen(root, action_frame, main_frame, builder, entry_ids, users, db)
     )
-    
+
     # Listener thread for receiving traffic
     listener_thread = threading.Thread(
         target=network.traffic_listener,
-        args=(lambda shooter, target: update_scores(shooter, target, users, blue_team_tree, red_team_tree, network, blue_team_score_label, red_team_score_label, action_textbox),),
+        args=(lambda shooter, target: update_scores(shooter, target, users, blue_team_tree, red_team_tree, network, blue_team_score_label, red_team_score_label, leading_team_label, action_textbox),),
         daemon=True,
     )
     listener_thread.start()
@@ -126,7 +130,7 @@ def start_game(users: Dict[str, List[User]], network: Networking) -> None:
 def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]], 
                   blue_team_tree: ttk.Treeview, red_team_tree: ttk.Treeview, network: Networking, 
                   blue_team_score_label: tk.Label, red_team_score_label: tk.Label, 
-                  action_textbox: tk.Text) -> None:
+                  leading_team_label: tk.Label, action_textbox: tk.Text) -> None:
     target_user = None
     
     # Only assign target_user if target_id is not "43" or "53"
@@ -176,11 +180,11 @@ def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]],
     refresh_team_treeview(blue_team_tree, users.get("blue", []))
     refresh_team_treeview(red_team_tree, users.get("red", []))
 
-    # Update cumulative team scores after the change
-    update_team_scores(blue_team_score_label, red_team_score_label, users)
+    # Update cumulative team scores
+    update_team_scores(blue_team_score_label, red_team_score_label, users, leading_team_label)
+    
 
-
-def update_team_scores(blue_team_score_label: tk.Label, red_team_score_label: tk.Label, users: Dict[str, List[User]]) -> None:
+def update_team_scores(blue_team_score_label: tk.Label, red_team_score_label: tk.Label, users: Dict[str, List[User]], leading_team_label: tk.Label) -> None:
     # Calculate cumulative score for Blue Team
     blue_score = sum(user.game_score for user in users.get("blue", []))
     red_score = sum(user.game_score for user in users.get("red", []))
@@ -188,6 +192,15 @@ def update_team_scores(blue_team_score_label: tk.Label, red_team_score_label: tk
     # Update the score labels
     blue_team_score_label.config(text=f"Blue Team Score: {blue_score}")
     red_team_score_label.config(text=f"Red Team Score: {red_score}")
+    
+    # Update the leading team label
+    if blue_score > red_score:
+        leading_team_label.config(text=f"Leading Team: Blue Team ({blue_score} points)", fg="blue")
+    elif red_score > blue_score:
+        leading_team_label.config(text=f"Leading Team: Red Team ({red_score} points)", fg="red")
+    else:
+        leading_team_label.config(text="Leading Team: Tie", fg="black")
+
 
 def update_game_event(action_textbox: tk.Text, message: str) -> None:
     action_textbox.config(state=tk.NORMAL)  # Enable text widget for editing
