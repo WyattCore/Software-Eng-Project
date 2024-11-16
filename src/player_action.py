@@ -22,9 +22,19 @@ def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], networ
     blue_team_tree = create_team_treeview(action_frame, "Blue Team", 0.05)
     red_team_tree = create_team_treeview(action_frame, "Red Team", 0.55)
 
+   # Create and place cumulative score labels
+    blue_team_score_label = tk.Label(action_frame, text="Blue Team Score: 0", font=("Helvetica", 12))
+    blue_team_score_label.place(relx=0.05, rely=0.35, anchor=tk.NW)
+
+    red_team_score_label = tk.Label(action_frame, text="Red Team Score: 0", font=("Helvetica", 12))
+    red_team_score_label.place(relx=0.55, rely=0.35, anchor=tk.NW)
+
     # Populate the teams
     populate_team_treeview(blue_team_tree, users.get("blue", []))
     populate_team_treeview(red_team_tree, users.get("red", []))
+
+    #  Update the score labels initially
+    update_team_scores(blue_team_score_label, red_team_score_label, users)
 
     # Configure buttons
     play_button: tk.Button = builder.get_object("play_button", action_frame)
@@ -111,7 +121,8 @@ def start_game(users: Dict[str, List[User]], network: Networking) -> None:
     print("Game has started!")
 
 def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]], 
-                  blue_team_tree: ttk.Treeview, red_team_tree: ttk.Treeview, network: Networking) -> None:
+                  blue_team_tree: ttk.Treeview, red_team_tree: ttk.Treeview, network: Networking, 
+                  blue_team_score_label: tk.Label, red_team_score_label: tk.Label) -> None:
     target_user = None
     
     # Only assign target_user if target_id is not "43" or "53"
@@ -150,9 +161,22 @@ def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]],
                         user.game_score -= 10
                         network.transmit_player_hit(target_id)
 
-
     refresh_team_treeview(blue_team_tree, users.get("blue", []))
     refresh_team_treeview(red_team_tree, users.get("red", []))
+    
+    # Update cumulative team scores after the change
+    update_team_scores(blue_team_score_label, red_team_score_label, users)
+
+def update_team_scores(blue_team_score_label: tk.Label, red_team_score_label: tk.Label, users: Dict[str, List[User]]) -> None:
+    # Calculate cumulative score for Blue Team
+    blue_score = sum(user.game_score for user in users.get("blue", []))
+    red_score = sum(user.game_score for user in users.get("red", []))
+    
+    # Update the score labels
+    blue_team_score_label.config(text=f"Blue Team Score: {blue_score}")
+    red_team_score_label.config(text=f"Red Team Score: {red_score}")
+
+
 
 def refresh_team_treeview(treeview: ttk.Treeview, team_users: List[User]) -> None:
     for item in treeview.get_children():
