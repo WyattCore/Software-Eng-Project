@@ -151,12 +151,14 @@ def update_scores(shooter_id: int, target_id: int, users: Dict[str, List[User]],
                         user.has_hit_base = True
                         network.transmit_player_hit(target_id)
                         event_message = f"Red Player {user.codename} hit base!"
+                        user.codename = f"𝐵{user.codename}"
                         update_game_event(action_textbox, event_message)  # Log event
                     elif target_id == 53 and user.team == "blue": 
                         user.game_score += 100
                         user.has_hit_base = True
                         network.transmit_player_hit(target_id)
                         event_message = f"Blue Player {user.codename} hit base!"
+                        user.codename = f"𝐵{user.codename}"
                         update_game_event(action_textbox, event_message)  # Log event
                     else:
                         network.transmit_player_hit(target_id)  # Corrected indentation
