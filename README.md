@@ -11,6 +11,7 @@
   python3 src/traffic_generator.py
   ```
   - Input equipment IDs that you would like, this generates UDP traffic & simulates game units.
+  - When entering IDs, please not that the traffic generator will ask for Red Team first. On the player_entry screen, ensure that the teams align with the corresponding table. For example, the Red Teams IDs should align with the table on the right.
 
   3. Install required libraries:
   ```    
