@@ -204,10 +204,10 @@ def return_to_entry_screen(root: tk.Tk, action_screen, main_frame: tk.Frame, bui
     main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
     # Repopulate entry fields with current user data
-    root.after(100, repopulate_entry_fields, builder, main_frame, entry_ids, users)
+    #root.after(100, repopulate_entry_fields, builder, main_frame, entry_ids, users)
     
     # Rebind events
-    rebind_events(builder, main_frame, root, users, entry_ids, db)
+    #rebind_events(builder, main_frame, root, users, entry_ids, db)
 
 def repopulate_entry_fields(builder: pygubu.Builder, main_frame: tk.Frame, entry_ids: Dict, users: Dict) -> None:
     for team in users:
