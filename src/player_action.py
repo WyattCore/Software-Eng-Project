@@ -8,7 +8,7 @@ import threading
 from networking import Networking
 from user import User
 
-Game_time = 30  # Game duration in seconds
+Game_time = 360  # Game duration in seconds
 
 def build_player_action_screen(root: tk.Tk, users: Dict[str, List[User]], network: Networking, main_frame: tk.Frame, return_to_entry_screen, builder, entry_ids, db, user_data) -> None:
     # Load the player action UI and set up the action screen
