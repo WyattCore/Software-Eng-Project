@@ -22,6 +22,7 @@
   python3 -m pip install Pillow
   pip install psycopg2-binary
   pip install pygubu
+  pip install pygame
   ```
   - Run the program:
   ```
