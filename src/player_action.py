@@ -92,7 +92,7 @@ def start_music() -> None:
 def stop_music() -> None:
     pygame.mixer.music.stop()
 
-def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int =20, countdown_label: Optional[tk.Label] = None) -> None:
+def start_countdown(root: tk.Tk, action_frame: tk.Frame, users: Dict[str, List[User]], network: Networking, count: int =30, countdown_label: Optional[tk.Label] = None) -> None:
     if countdown_label is None:
         countdown_label = tk.Label(action_frame, text=str(count), font=("Helvetica", 64))
         countdown_label.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
