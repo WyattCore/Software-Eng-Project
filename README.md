@@ -35,6 +35,15 @@
   ```
 
   4. For player input, use the TAB key to register entry spaces.
+  - Example Team input below: 
+  - For team 1 enter as follows:
+  - Equipment ID:          User ID:       Name:
+  -     1                    1            Wyatt
+  -     2                    2            Jonah
+  - Team 2:
+  - Equipment ID:          User ID:       Name:
+  -     3                    3            Isaac
+  -     4                    4            Noah
   - When you are finished registering the first team's players use the mouse to click on the first entry space for the other team's equipment ID and proceed with the same process.
   - Enter your equipment IDs the same as ones you entered in the traffic generator.
   - To clear all entries press the F12 key. 
